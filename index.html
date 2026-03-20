@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FLONA Ice Cream 🍦</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <meta name="theme-color" content="#2E7D32"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+</head>
+<body>
+<div class="ultra-ring"></div>
+<canvas id="cc"></canvas>
+<div class="toast" id="toast"></div>
+
+<div class="page">
+
+  <!-- HEADER: Logo LEFT -->
+  <header class="hdr">
+    <div class="hdr-l">
+      <img src="flona-logo.jpg" alt="Flona" class="logo-img"
+           onerror="this.style.display='none';document.getElementById('lfb').style.display='flex';"/>
+      <div id="lfb" class="logo-fb" style="display:none;">🍦</div>
+      <div class="logo-txt">
+        <h1>FLONA</h1>
+        <p>Ice Cream · Spin &amp; Win</p>
+      </div>
+    </div>
+    <button class="snd-btn" id="sndBtn">🔊</button>
+  </header>
+
+  <!-- MODE BUTTONS -->
+  <div class="modes">
+    <button class="mode-btn normal active" data-mode="normal">Normal<span class="mode-price">Rs. 20</span></button>
+    <button class="mode-btn pro"           data-mode="pro">Pro<span class="mode-price">Rs. 50</span></button>
+    <button class="mode-btn ultra"         data-mode="ultra">✨ Ultra<span class="mode-price">Rs. 100</span></button>
+  </div>
+
+  <!-- WHEEL -->
+  <div class="wheel-wrap">
+    <div class="wheel-outer">
+      <!-- Arrow pointer — sits at 12 o'clock, tip points DOWN into wheel -->
+      <div class="wheel-pin">🔻</div>
+      <canvas id="spinWheel"></canvas>
+      <!-- Flona logo center -->
+      <div class="wcl">
+        <img src="assets/images/flona-logo.jpg" alt="Flona"
+             onerror="this.parentNode.innerHTML='🍦';"/>
+      </div>
+    </div>
+    <button class="spin-btn" id="spinBtn">SPIN! 🎰</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="rbox" id="rBox">
+    <span class="rem" id="rEm">🎯</span>
+    <div class="rtit" id="rTit">Press SPIN to play!</div>
+    <div class="rsub" id="rSub">Good luck! 🍀</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="sl">Spins (mode)</div><div class="sv" id="spinCnt">0</div></div>
+    <div class="stat"><div class="sl">Mode</div><div class="sv" id="mName" style="font-size:.95rem;padding-top:4px">Normal</div></div>
+  </div>
+
+  <!-- WINNERS -->
+  <div class="ww">
+    <button class="wtog" id="wTog"><span>🏆 Recent Winners</span><span id="wArr">▾</span></button>
+    <div class="wpan" id="wPan">
+      <div class="wlist" id="wList"><div style="text-align:center;padding:18px;opacity:.5">No winners yet 🍦</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initGame } from './game.js';
+  initGame();
+</script>
+</body>
+</html>

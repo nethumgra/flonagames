@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>FLONA Admin 🍦</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Counter adjust buttons ── */
+    .cnt-row { display:flex; align-items:center; gap:6px; justify-content:center; }
+    .cnt-adj {
+      background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; border-radius: 6px; width: 28px; height: 28px;
+      font-size: .95rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .cnt-adj:hover { background: rgba(255,255,255,.18); }
+    .cnt-val { min-width: 34px; text-align: center; font-weight: 700; font-size: 1rem; }
+
+    /* ── Prediction badge ── */
+    .nb {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px; padding: 4px 10px; font-size: .82rem; white-space: nowrap;
+    }
+
+    /* ── Manual selected button highlight ── */
+    .mbtn.msel {
+      outline: 3px solid #76ff03;
+      background: rgba(118,255,3,.18) !important;
+    }
+
+    /* ── Cycle position cell ── */
+    .cp-cell { font-size: .72rem; opacity: .65; white-space: nowrap; }
+
+    /* ── Control status ── */
+    .cstat { display:block; font-size:.8rem; margin-bottom:10px; opacity:.85; }
+  </style>
+</head>
+<body class="ab">
+<div class="atoast" id="atoast"></div>
+<div class="ap">
+
+  <!-- HEADER -->
+  <div class="ahdr">
+    <div class="ahdr-l">
+      <img src="assets/images/flona-logo.jpg" alt="Flona" class="alogo" onerror="this.style.display='none';"/>
+      <div class="attl"><h1>FLONA Admin</h1><p>Spin Wheel — Control Panel</p></div>
+    </div>
+    <div class="abadges">
+      <a href="index.html" class="abg">🎮 Game</a>
+      <span class="abg" id="cb">🔴 Offline</span>
+    </div>
+  </div>
+  <div class="offbar" id="offbar">⚠️ Firebase offline — local data only.</div>
+
+  <!-- REVENUE -->
+  <p class="sec">💰 Revenue</p>
+  <div class="ag ag2" style="margin-bottom:12px">
+    <div class="ac big" style="background:linear-gradient(135deg,rgba(46,125,50,.2),rgba(56,142,60,.1));border-color:rgba(165,214,167,.16)">
+      <div class="acl">Total Revenue</div><div class="acv" id="tr">Rs. 0</div><div class="acs" id="ts">0 spins</div>
+    </div>
+  </div>
+  <div class="ag ag3" style="margin-bottom:12px">
+    <div class="ac"><div class="acl">🩷 Normal</div><div class="acv" id="nSp">0</div><div class="acs" id="nRv">Rs. 0</div></div>
+    <div class="ac"><div class="acl">🌿 Pro</div>   <div class="acv" id="pSp">0</div><div class="acs" id="pRv">Rs. 0</div></div>
+    <div class="ac"><div class="acl">💜 Ultra</div>  <div class="acv" id="uSp">0</div><div class="acs" id="uRv">Rs. 0</div></div>
+  </div>
+
+  <!-- CHART -->
+  <div class="ac" style="margin-bottom:14px">
+    <div class="acl" style="margin-bottom:10px">📊 Revenue by Mode</div>
+    <canvas id="rc"></canvas>
+  </div>
+
+  <!-- STEP COUNTERS & NEXT PREDICTION -->
+  <p class="sec">🔢 Step Counters &amp; Next Prediction</p>
+  <div class="ac" style="margin-bottom:14px;overflow-x:auto">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Counter</th>
+          <th>Cycle Position</th>
+          <th>Next Spin Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Normal -->
+        <tr>
+          <td><span class="mb mb-n">Normal</span><div style="font-size:.7rem;opacity:.55">20-round</div></td>
+          <td>
+            <div class="cnt-row">
+              <button class="cnt-adj" data-mode="normal" data-delta="-1" title="Decrease">−</button>
+              <span class="cnt-val" id="cN">0</span>
+              <button class="cnt-adj" data-mode="normal" data-delta="1"  title="Increase">+</button>
+            </div>
+          </td>
+          <td class="cp-cell" id="cpN">–</td>
+          <td><span class="nb" id="nN">–</span></td>
+        </tr>
+        <!-- Pro -->
+        <tr>
+          <td><span class="mb mb-p">Pro</span><div style="font-size:.7rem;opacity:.55">20-round</div></td>
+          <td>
+            <div class="cnt-row">
+              <button class="cnt-adj" data-mode="pro" data-delta="-1" title="Decrease">−</button>
+              <span class="cnt-val" id="cP">0</span>
+              <button class="cnt-adj" data-mode="pro" data-delta="1"  title="Increase">+</button>
+            </div>
+          </td>
+          <td class="cp-cell" id="cpP">–</td>
+          <td><span class="nb" id="nP">–</span></td>
+        </tr>
+        <!-- Ultra -->
+        <tr>
+          <td><span class="mb mb-u">Ultra</span><div style="font-size:.7rem;opacity:.55">23-round</div></td>
+          <td>
+            <div class="cnt-row">
+              <button class="cnt-adj" data-mode="ultra" data-delta="-1" title="Decrease">−</button>
+              <span class="cnt-val" id="cU">0</span>
+              <button class="cnt-adj" data-mode="ultra" data-delta="1"  title="Increase">+</button>
+            </div>
+          </td>
+          <td class="cp-cell" id="cpU">–</td>
+          <td><span class="nb" id="nU">–</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SPIN RESULT CONTROL -->
+  <p class="sec">⚙️ Spin Result Control</p>
+  <div class="cbox" style="margin-bottom:14px">
+    <h2>Control Mode</h2>
+    <span class="cstat" id="cSt">✅ Logic Mode Active</span>
+    <div class="cbrow">
+      <button class="cbtn ca" id="cL">
+        🧠 Logic Mode<span class="cs">Auto 20/23-step sequence</span>
+      </button>
+      
+    </div>
+    <!-- 6 manual result buttons — shown only in manual mode -->
+    <div id="mp" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;">
+      <button class="mbtn mb-empty"    data-result="empty">🧊<br><small>Empty</small></button>
+      <button class="mbtn mb-tryagain" data-result="tryagain">🔄<br><small>Try Again</small></button>
+      <button class="mbtn mb-win01"    data-result="win01">🍦<br><small>Win No 01</small></button>
+      <button class="mbtn mb-win02"    data-result="win02">🍨<br><small>Win No 02</small></button>
+      <button class="mbtn mb-win03"    data-result="win03">🍧<br><small>Win No 03</small></button>
+      <button class="mbtn mb-win04"    data-result="win04">🏆<br><small>Grand Prize</small></button>
+    </div>
+  </div>
+
+  <!-- WINNERS -->
+  <p class="sec">🏆 Last 50 Winners</p>
+  <div class="ac" style="margin-bottom:14px">
+    <div class="aws" id="awList"><p style="opacity:.55;text-align:center;padding:20px">No winners yet.</p></div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="dz">
+    <button class="dbtn" id="rCnt">🔄 Reset Step Counters</button>
+    <button class="dbtn" id="rSt">⚠️ Reset All Stats</button>
+  </div>
+
+</div>
+<script type="module">
+  import { initAdmin } from './admin.js';
+  initAdmin();
+</script>
+</body>
+</html>
